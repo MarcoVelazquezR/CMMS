@@ -1,11 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, View} from 'react-native';
+import imgfond from './src/img/fondo.jpg';
+import Login from './src/components/Login';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Image source={imgfond} style={[styles.imgfondo, StyleSheet.absoluteFill]} />
+      <Login />
     </View>
   );
 }
@@ -16,5 +18,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  imgfondo: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 });
