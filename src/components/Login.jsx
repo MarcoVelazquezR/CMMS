@@ -1,37 +1,42 @@
 import React from 'react';
-import { Image, Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { Image, ImageBackground, Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import imgperf from '../img/logodifem.jpeg';
 import { BlurView } from 'expo-blur';
+import { useNavigation } from '@react-navigation/native';
+import imgfond from '../img/fondo.jpg';
 
 export default function Login() {
+    const navigation = useNavigation();
     return (
-        <ScrollView contentContainerStyle={{
-            flex: 1,
-            width: '100%',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
-        }}>
-            <BlurView intensity={90}>
-                <View style={styles.loginfondo}>
-                    <Image source={imgperf} style={styles.profilePicture} />
-                    <View>
-                        <Text style={styles.textoPrincipal}>E-mail</Text>
-                        <TextInput style={styles.input} placeholder='email@email.com' />
+        <ImageBackground source={imgfond} resizeMode="cover" style={styles.imageBackground}>
+            <ScrollView contentContainerStyle={{
+                flex: 1,
+                width: '100%',
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+                <BlurView intensity={90}>
+                    <View style={styles.loginfondo}>
+                        <Image source={imgperf} style={styles.profilePicture} />
+                        <View>
+                            <Text style={styles.textoPrincipal}>E-mail</Text>
+                            <TextInput style={styles.input} placeholder='email@email.com' />
+                        </View>
+                        <View>
+                            <Text style={styles.textoPrincipal}>Password</Text>
+                            <TextInput style={styles.input} placeholder='password' secureTextEntry={true} />
+                        </View>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00CFEB90', marginTop: 20 }]}>
+                            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#6792F090' }]} onPress={() => navigation.navigate('Register')}>
+                            <Text style={styles.buttonText}>Registrarse</Text>
+                        </TouchableOpacity>
                     </View>
-                    <View>
-                        <Text style={styles.textoPrincipal}>Password</Text>
-                        <TextInput style={styles.input} placeholder='password' secureTextEntry={true} />
-                    </View>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#00CFEB90', marginTop: 20 }]}>
-                        <Text style={styles.buttonText}>Iniciar Sesión</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#6792F090' }]}>
-                        <Text style={styles.buttonText}>Registrarse</Text>
-                    </TouchableOpacity>
-                </View>
-            </BlurView>
-        </ScrollView>
+                </BlurView>
+            </ScrollView>
+        </ImageBackground >
     );
 }
 
@@ -79,5 +84,8 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 1,
         marginTop: 5,
+    },
+    imageBackground: {
+        flex: 1,
     },
 });

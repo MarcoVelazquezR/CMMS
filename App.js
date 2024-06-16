@@ -1,13 +1,22 @@
 import React from 'react';
-import { Image, StyleSheet, View} from 'react-native';
-import imgfond from './src/img/fondo.jpg';
+import { Image, ImageBackground, SafeAreaView, StyleSheet, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './src/components/Login';
+import Register from './src/components/Register';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Image source={imgfond} style={[styles.imgfondo, StyleSheet.absoluteFill]} />
-      <Login />
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Login">
+              <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+              <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+            </Stack.Navigator>
+          </NavigationContainer>
+      
     </View>
   );
 }
@@ -15,13 +24,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  imgfondo: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
+  
 });
