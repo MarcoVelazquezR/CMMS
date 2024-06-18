@@ -9,17 +9,25 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "events": "^3.3.0",
     "expo": "~51.0.14",
     "expo-blur": "^13.0.2",
     "expo-status-bar": "~1.12.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.1",
     "picker": "^0.1.4",
     "react": "18.2.0",
-    "react-native": "0.74.2"
+    "react-native": "0.74.2",
+    "react-native-calendars": "^1.1305.0",
+    "recyclerlistview": "^4.2.1",
+    "ts-object-utils": "^0.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

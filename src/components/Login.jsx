@@ -1,12 +1,38 @@
-import React from 'react';
-import { Image, ImageBackground, Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { Image, ImageBackground, Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import imgperf from '../img/logodifem.jpeg';
 import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
 import imgfond from '../img/fondo.jpg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
     const navigation = useNavigation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('http://192.168.1.12:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error de inicio de sesión');
+            }
+
+            const data = await response.json();
+            await AsyncStorage.setItem('token', data.token); 
+
+            Alert.alert('Éxito', 'Inicio de sesión exitoso');
+            navigation.replace('Principal');
+        } catch (error) {
+            Alert.alert('Error', error.message);
+        }
+    };
     return (
         <ImageBackground source={imgfond} resizeMode="cover" style={styles.imageBackground}>
             <ScrollView contentContainerStyle={{
@@ -21,13 +47,20 @@ export default function Login() {
                         <Image source={imgperf} style={styles.profilePicture} />
                         <View>
                             <Text style={styles.textoPrincipal}>E-mail</Text>
-                            <TextInput style={styles.input} placeholder='email@email.com' />
+                            <TextInput style={styles.input}
+                                placeholder='email@email.com'
+                                value={email}
+                                onChangeText={setEmail} />
                         </View>
                         <View>
                             <Text style={styles.textoPrincipal}>Password</Text>
-                            <TextInput style={styles.input} placeholder='password' secureTextEntry={true} />
+                            <TextInput style={styles.input}
+                                placeholder='password'
+                                secureTextEntry={true}
+                                value={password}
+                                onChangeText={setPassword} />
                         </View>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00CFEB90', marginTop: 20 }]}>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00CFEB90', marginTop: 20 }]} onPress={handleLogin}>
                             <Text style={styles.buttonText}>Iniciar Sesión</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.button, { backgroundColor: '#6792F090' }]} onPress={() => navigation.navigate('Register')}>

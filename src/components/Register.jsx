@@ -12,7 +12,7 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('http://192.168.1.16:3000/api/register', {
+      const response = await fetch('http://192.168.1.12:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,14 +26,14 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error en la respuesta del servidor');
       }
-
       const data = await response.json();
-      Alert.alert('Éxito', data.message); 
+      Alert.alert('Éxito', data.message);
     } catch (error) {
-      console.error('Error al registrar usuario:', error);
-      Alert.alert('Error', 'Error al registrar usuario');
+      console.error('Error al registrar usuario:', error.message);
+      Alert.alert('Error', error.message);
     }
   };
 
