@@ -18,7 +18,7 @@ export default function AddActivity({ route, navigation }) {
         const fetchTechnicians = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const response = await fetch('http://192.168.1.12:3000/api/technicians', {
+                const response = await fetch('http://10.224.5.140:3000/api/technicians', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -38,7 +38,7 @@ export default function AddActivity({ route, navigation }) {
     const handleAddActivity = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/activities', {
+            const response = await fetch('http://10.224.5.140:3000/api/activities', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,15 +47,13 @@ export default function AddActivity({ route, navigation }) {
                 body: JSON.stringify(newActivity),
             });
 
-            // Manejo de errores más detallado
             if (!response.ok) {
-                const errorData = await response.json(); // Obtén detalles del error
-                throw new Error(errorData.error || 'Error al agregar actividad'); // Usa el mensaje del servidor o uno genérico
+                const errorData = await response.json(); 
+                throw new Error(errorData.error || 'Error al agregar actividad');
             }
 
             Alert.alert('Éxito', 'Actividad agregada correctamente');
 
-            // Navegación después de agregar
             if (navigation.canGoBack()) {
                 navigation.goBack();
             } else {
@@ -92,9 +90,9 @@ export default function AddActivity({ route, navigation }) {
                 />
                 <Picker
                     style={styles.picker}
-                    selectedValue={newActivity.technicianId} // <-- Usar newActivity.technicianId
+                    selectedValue={newActivity.technicianId} 
                     onValueChange={(itemValue) => setNewActivity({ ...newActivity, technicianId: itemValue })}
-                    mode="dropdown" // Modo para seleccionar un solo técnico
+                    mode="dropdown" 
                 >
                     <Picker.Item key={0} label="Seleccionar Técnico" value={null} />
                     {Array.isArray(technicians) && technicians.map((technician) => (
@@ -131,14 +129,14 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     saveButton: {
-        backgroundColor: '#4CAF50', // Verde
+        backgroundColor: '#4CAF50',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
         marginTop: 10,
     },
     backButton: {
-        backgroundColor: '#007AFF', // Azul
+        backgroundColor: '#007AFF',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

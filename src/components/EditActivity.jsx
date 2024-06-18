@@ -10,55 +10,54 @@ export default function EditActivity({ route, navigation }) {
         title: '',
         description: '',
         time: '',
-        technicianId: null, // Asegúrate de que es un solo ID
+        technicianId: null,
         date: date,
     });
 
     useEffect(() => {
-        const fetchActivity = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
-                const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (!response.ok) {
-                    throw new Error('Error al obtener actividad');
-                }
-                const data = await response.json();
-                // Asegúrate de que los técnicos seleccionados sean un array de IDs
-                data.technicians = data.technicians.map(technician => technician.id);
-                setActivity(data);
-            } catch (error) {
-                console.error(error);
-                Alert.alert('Error', 'No se pudo cargar la actividad');
-            }
-        };
-
-        const fetchTechnicians = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
-                const response = await fetch('http://192.168.1.12:3000/api/technicians', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (!response.ok) {
-                    throw new Error('Error al obtener técnicos');
-                }
-                const data = await response.json();
-                setTechnicians(data);
-            } catch (error) {
-                console.error(error);
-                Alert.alert('Error', 'No se pudieron cargar los técnicos');
-            }
-        };
-
         fetchActivity();
         fetchTechnicians();
-    }, [activityId]); // Volver a cargar si cambia el ID de la actividad
+    }, [activityId]);
+
+    const fetchActivity = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch(`http://10.224.5.140:3000/api/activities/${activityId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) {
+                throw new Error('Error al obtener actividad');
+            }
+            const data = await response.json();
+            data.technicians = data.technicians.map(technician => technician.id);
+            setActivity(data);
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'No se pudo cargar la actividad');
+        }
+    };
+
+    const fetchTechnicians = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch('http://10.224.5.140:3000/api/technicians', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) {
+                throw new Error('Error al obtener técnicos');
+            }
+            const data = await response.json();
+            setTechnicians(data);
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'No se pudieron cargar los técnicos');
+        }
+    };
 
     const handleEditActivity = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
+            const response = await fetch(`http://10.224.5.140:3000/api/activities/${activityId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +69,7 @@ export default function EditActivity({ route, navigation }) {
                 throw new Error('Error al editar actividad');
             }
             Alert.alert('Éxito', 'Actividad editada correctamente');
-            navigation.goBack(); // Regresar a ViewActivities
+            navigation.goBack();
         } catch (error) {
             console.error(error);
             Alert.alert('Error', 'No se pudo editar la actividad');
@@ -101,7 +100,7 @@ export default function EditActivity({ route, navigation }) {
                 />
                 <Picker
                     style={styles.picker}
-                    selectedValue={activity.technicianId} // Usar activity.technicianId
+                    selectedValue={activity.technicianId}
                     onValueChange={(itemValue) => setActivity({ ...activity, technicianId: itemValue })}
                     mode="dropdown"
                 >
@@ -141,14 +140,14 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     saveButton: {
-        backgroundColor: '#4CAF50', // Verde
+        backgroundColor: '#4CAF50',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
         marginTop: 10,
     },
     backButton: {
-        backgroundColor: '#007AFF', // Azul
+        backgroundColor: '#007AFF',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

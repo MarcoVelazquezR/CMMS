@@ -12,7 +12,7 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('http://192.168.1.12:3000/api/register', {
+      const response = await fetch('http://10.224.5.140:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

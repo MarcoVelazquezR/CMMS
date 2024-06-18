@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     button: {
-        backgroundColor: '#007AFF', // Azul iOS
+        backgroundColor: '#007AFF', 
         padding: 15,
         borderRadius: 8,
         width: '80%',

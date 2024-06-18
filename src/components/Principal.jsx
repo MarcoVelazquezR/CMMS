@@ -22,9 +22,9 @@ export default function Principal() {
         fetchInitialData();
     }, []);
 
-    const fetchInitialData = async () => { // Función para cargar datos iniciales
+    const fetchInitialData = async () => { 
         try {
-            await Promise.all([fetchActivities(), fetchTechnicians()]); // Carga en paralelo
+            await Promise.all([fetchActivities(), fetchTechnicians()]); 
         } catch (error) {
             console.error('Error al cargar datos iniciales:', error);
             Alert.alert('Error', 'No se pudieron cargar los datos iniciales');
@@ -33,7 +33,7 @@ export default function Principal() {
 
     const fetchActivities = async () => {
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://192.168.1.12:3000/api/activities', {
+        const response = await fetch('http://10.224.5.140:3000/api/activities', {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -43,28 +43,24 @@ export default function Principal() {
     const fetchTechnicians = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/technicians', {
+            const response = await fetch('http://10.224.5.140:3000/api/technicians', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (!response.ok) { // Check if the request was successful
+            if (!response.ok) { 
                 throw new Error(`Error fetching technicians: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
 
-            // Ensure data is an array before filtering
             if (Array.isArray(data)) {
                 setTechnicians(data.filter(user => user.rol === 'tecnico'));
             } else {
-                // Handle the case where data is not an array (e.g., an error object)
                 console.error('Error fetching technicians: Unexpected response format', data);
-                // You might want to display an error message to the user or log the error
                 Alert.alert('Error', 'Unexpected error fetching technicians.');
             }
         } catch (error) {
             console.error('Error fetching technicians:', error);
-            // Display an error message to the user
             Alert.alert('Error', 'An error occurred while fetching technicians.');
         }
     };
@@ -74,10 +70,10 @@ export default function Principal() {
         return acc;
     }, {});
 
-    const fetchActivitiesForDate = async (dateString) => {  // Recibe dateString como parámetro
+    const fetchActivitiesForDate = async (dateString) => { 
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities?date=${dateString}`, {
+            const response = await fetch(`http://10.224.5.140:3000/api/activities?date=${dateString}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) {
@@ -136,7 +132,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     button: {
-        backgroundColor: '#007AFF', // Azul iOS
+        backgroundColor: '#007AFF', 
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
@@ -162,14 +158,14 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     saveButton: {
-        backgroundColor: '#4CAF50', // Verde
+        backgroundColor: '#4CAF50',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
         marginTop: 10,
     },
     cancelButton: {
-        backgroundColor: '#f44336', // Rojo
+        backgroundColor: '#f44336', 
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

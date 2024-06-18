@@ -10,7 +10,7 @@ export default function ViewActivities({ route, navigation }) {
     const fetchActivitiesForDate = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities?date=${date}`, {
+            const response = await fetch(`http://10.224.5.140:3000/api/activities?date=${date}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -25,26 +25,24 @@ export default function ViewActivities({ route, navigation }) {
             Alert.alert('Error', 'No se pudieron cargar las actividades');
         }
     };
-
-    useEffect(() => {
-        fetchActivitiesForDate(date); // Pasa 'date' a fetchActivitiesForDate
-    }, [date]);
+    useFocusEffect(
+        useCallback(() => {
+            fetchActivitiesForDate();
+        }, [date])
+    );
 
     const handleEditActivity = (activityId) => {
-        // Lógica para navegar a la pantalla de edición de actividad (implementa según tus necesidades)
-        // Puedes pasar el ID de la actividad y la fecha como parámetros
         navigation.navigate('EditActivity', { activityId, date });
     };
 
     const handleDeleteActivity = async (activityId) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
+            const response = await fetch(`http://10.224.5.140:3000/api/activities/${activityId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.ok) {
-                // Actualizar la lista de actividades después de eliminar
                 fetchActivitiesForDate(date);
             } else {
                 throw new Error('Error al eliminar actividad');
@@ -63,9 +61,9 @@ export default function ViewActivities({ route, navigation }) {
                 {activities?.length > 0 ? (
                     activities.map((activity) => (
                         <View key={activity.id} style={styles.activityItem}>
-                            <Text style={styles.activityTitle}>{activity.title}</Text>
-                            <Text>{activity.description}</Text>
-                            <Text>Hora: {activity.time}</Text>
+                            <Text style={styles.activityTitle}>{activity.titulo}</Text>
+                            <Text>{activity.descripcion}</Text>
+                            <Text>Hora: {activity.hora}</Text>
                             <Text>Técnico: {activity.technician ? activity.technician.name : 'No asignado'}</Text>
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={styles.editButton} onPress={() => handleEditActivity(activity.id)}>
@@ -82,7 +80,6 @@ export default function ViewActivities({ route, navigation }) {
                 )}
             </ScrollView>
 
-            {/* Botón para volver a la pantalla principal */}
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Principal')}>
                 <Text style={styles.buttonText}>Volver</Text>
             </TouchableOpacity>
@@ -133,7 +130,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     backButton: {
-        backgroundColor: '#007AFF', // Color azul
+        backgroundColor: '#007AFF',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
