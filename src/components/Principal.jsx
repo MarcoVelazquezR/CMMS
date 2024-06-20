@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal, Alert, ImageBackground } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import imgfond from '../img/fondo.jpg';
+import Login from './Login';
 
 LocaleConfig.locales['es'] = {
     monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -22,9 +24,9 @@ export default function Principal() {
         fetchInitialData();
     }, []);
 
-    const fetchInitialData = async () => { 
+    const fetchInitialData = async () => {
         try {
-            await Promise.all([fetchActivities(), fetchTechnicians()]); 
+            await Promise.all([fetchActivities(), fetchTechnicians()]);
         } catch (error) {
             console.error('Error al cargar datos iniciales:', error);
             Alert.alert('Error', 'No se pudieron cargar los datos iniciales');
@@ -33,7 +35,7 @@ export default function Principal() {
 
     const fetchActivities = async () => {
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://10.224.5.140:3000/api/activities', {
+        const response = await fetch('http://192.168.1.17:3000/api/activities', {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -43,11 +45,11 @@ export default function Principal() {
     const fetchTechnicians = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://10.224.5.140:3000/api/technicians', {
+            const response = await fetch('http://192.168.1.17:3000/api/technicians', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (!response.ok) { 
+            if (!response.ok) {
                 throw new Error(`Error fetching technicians: ${response.status} ${response.statusText}`);
             }
 
@@ -70,10 +72,10 @@ export default function Principal() {
         return acc;
     }, {});
 
-    const fetchActivitiesForDate = async (dateString) => { 
+    const fetchActivitiesForDate = async (dateString) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://10.224.5.140:3000/api/activities?date=${dateString}`, {
+            const response = await fetch(`http://192.168.1.17:3000/api/activities?date=${dateString}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) {
@@ -99,12 +101,17 @@ export default function Principal() {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
-            <Calendar
-                onDayPress={onDayPress}
-                markedDates={markedDates}
-            />
-        </View>
+        <ImageBackground source={imgfond} resizeMode="cover" style={styles.imageBackground}>
+            <TouchableOpacity style={styles.cerrarSesion} onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.buttonText}>Cerrar Sesión</Text>
+            </TouchableOpacity>
+            <View style={styles.container}>
+                <Calendar
+                    onDayPress={onDayPress}
+                    markedDates={markedDates}
+                />
+            </View>
+        </ImageBackground>
     );
 }
 
@@ -132,7 +139,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     button: {
-        backgroundColor: '#007AFF', 
+        backgroundColor: '#007AFF',
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
@@ -165,7 +172,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     cancelButton: {
-        backgroundColor: '#f44336', 
+        backgroundColor: '#f44336',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
@@ -186,5 +193,16 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: 'white',
         fontWeight: 'bold',
+    },
+    imageBackground: {
+        flex: 1,
+    },
+    cerrarSesion: {
+        backgroundColor: '#007AFF',
+        padding: 12,
+        width: 120,
+        marginLeft: 12,
+        borderRadius: 8,
+        marginTop: 50,
     },
 });

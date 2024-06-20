@@ -9,10 +9,21 @@ export default function Register() {
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
 
   const handleRegister = async () => {
+    const newErrors = {};
+    if (!nombreCompleto.trim()) newErrors.nombreCompleto = 'El nombre es obligatorio';
+    if (!validateEmail(email)) newErrors.email = 'El email no es válido';
+    if (password.length < 8) newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     try {
-      const response = await fetch('http://10.224.5.140:3000/api/register', {
+      const response = await fetch('http://192.168.1.17:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,6 +48,11 @@ export default function Register() {
     }
   };
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   return (
     <ImageBackground source={imgfond} resizeMode="cover" style={styles.imageBackground}>
       <ScrollView contentContainerStyle={{ flex: 1, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -44,7 +60,13 @@ export default function Register() {
           <View style={styles.registerfondo}>
             <View>
               <Text style={styles.textoPrincipal}>Nombre completo</Text>
-              <TextInput style={styles.input} placeholder='Nombre completo' value={nombreCompleto} onChangeText={setNombreCompleto} />
+              <TextInput
+                style={styles.input}
+                placeholder="Nombre completo"
+                value={nombreCompleto}
+                onChangeText={setNombreCompleto}
+              />
+              {errors.nombreCompleto && <Text style={styles.errorText}>{errors.nombreCompleto}</Text>}
             </View>
             <View style={styles.pickerContainer}>
               <Text style={styles.textoPrincipal}>Rol:</Text>
@@ -59,11 +81,25 @@ export default function Register() {
             </View>
             <View>
               <Text style={styles.textoPrincipal}>E-mail</Text>
-              <TextInput style={styles.input} placeholder='email@email.com' value={email} onChangeText={setEmail} />
+              <TextInput
+                style={styles.input}
+                placeholder="email@email.com"
+                value={email}
+                onChangeText={setEmail}
+              />
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
+
             <View>
               <Text style={styles.textoPrincipal}>Password</Text>
-              <TextInput style={styles.input} placeholder='password' secureTextEntry={true} value={password} onChangeText={setPassword} />
+              <TextInput
+                style={styles.input}
+                placeholder="password"
+                secureTextEntry={true}
+                value={password}
+                onChangeText={setPassword}
+              />
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
             <TouchableOpacity style={[styles.button, { backgroundColor: '#00CFEB90', marginTop: 20 }]} onPress={handleRegister}>
               <Text style={styles.buttonText}>Registrar</Text>

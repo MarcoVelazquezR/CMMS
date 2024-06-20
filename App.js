@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ImageBackground } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,7 @@ import ViewActivities from './src/components/ViewActivities';
 import AddActivity from './src/components/AddActivity';
 import EditActivity from './src/components/EditActivity';
 import ActionSelectionScreen from './src/components/ActionSelectionScreen';
+import imgfond from './src/img/fondo.jpg';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +40,7 @@ export default function App() {
           <Stack.Screen name="ActionSelectionScreen" component={ActionSelectionScreen} />
         </Stack.Navigator>
       </NavigationContainer>
-    </View>
+    </View >
   );
 }
 
