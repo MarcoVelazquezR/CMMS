@@ -35,7 +35,7 @@ export default function Principal() {
 
     const fetchActivities = async () => {
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://192.168.1.17:3000/api/activities', {
+        const response = await fetch('http://10.224.7.179:3000/api/activities', {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -45,7 +45,7 @@ export default function Principal() {
     const fetchTechnicians = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.17:3000/api/technicians', {
+            const response = await fetch('http://10.224.7.179:3000/api/technicians', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -67,6 +67,26 @@ export default function Principal() {
         }
     };
 
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        fetchInitialData();
+        fetchUserName();
+    }, []);
+
+    const fetchUserName = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch('http://10.224.7.179:3000/api/user-profile', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            setUserName(data.nombre_completo);
+        } catch (error) {
+            Alert.alert(error);
+        }
+    };
+
     const markedDates = Object.keys(activities).reduce((acc, date) => {
         acc[date] = { marked: true, dotColor: 'blue' };
         return acc;
@@ -75,7 +95,7 @@ export default function Principal() {
     const fetchActivitiesForDate = async (dateString) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.17:3000/api/activities?date=${dateString}`, {
+            const response = await fetch(`http://10.224.7.179:3000/api/activities?date=${dateString}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) {
@@ -102,9 +122,12 @@ export default function Principal() {
 
     return (
         <ImageBackground source={imgfond} resizeMode="cover" style={styles.imageBackground}>
-            <TouchableOpacity style={styles.cerrarSesion} onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.buttonText}>Cerrar Sesión</Text>
-            </TouchableOpacity>
+            <View style={styles.headerContainer}>
+                <Text style={styles.welcomeText}>Bienvenido, {typeof userName === 'string' ? userName : ''}</Text>
+                <TouchableOpacity style={styles.cerrarSesion} onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.buttonText}>Cerrar Sesión</Text>
+                </TouchableOpacity>
+            </View>
             <View style={styles.container}>
                 <Calendar
                     onDayPress={onDayPress}
@@ -204,5 +227,19 @@ const styles = StyleSheet.create({
         marginLeft: 12,
         borderRadius: 8,
         marginTop: 50,
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        marginTop: 50,
+    },
+    welcomeText: {
+        fontSize: 18,
+        marginTop: 45,
+        marginLeft: 5,
+        color: 'white',
+        fontWeight: 'bold',
     },
 });

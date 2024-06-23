@@ -13,7 +13,7 @@ export default function Login() {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('http://192.168.1.17:3000/api/login', {
+            const response = await fetch('http://10.224.7.179:3000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),

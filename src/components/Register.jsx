@@ -23,7 +23,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch('http://192.168.1.17:3000/api/register', {
+      const response = await fetch('http://10.224.7.179:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
