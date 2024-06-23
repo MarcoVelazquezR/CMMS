@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, Alert, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal, Alert, ImageBackground, ScrollView } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import imgfond from '../img/fondo.jpg';
-import Login from './Login';
+import AddReport from './AddReport';
+import AddActivity from './AddActivity';
 
 LocaleConfig.locales['es'] = {
     monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -19,10 +20,29 @@ export default function Principal() {
     const [activities, setActivities] = useState({});
     const [technicians, setTechnicians] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [reporteModalVisible, setReporteModalVisible] = useState(false);
+    const [userRole, setUserRole] = useState(null);
+    const [userName, setUserName] = useState('');
+    const navigation = useNavigation();
+    const [userReports, setUserReports] = useState([]);
+    const [selectedReportId, setSelectedReportId] = useState(null);
+    const [showCalendarForAssignment, setShowCalendarForAssignment] = useState(false);
+    const [allReports, setAllReports] = useState([]);
 
     useEffect(() => {
         fetchInitialData();
-    }, []);
+        fetchUserName();
+        getUserRole();
+        fetchReportsBasedOnRole();
+    }, [userRole]);
+
+    const fetchReportsBasedOnRole = async () => {
+        if (userRole === 'usuario') {
+            fetchUserReports();
+        } else if (userRole === 'administrador') {
+            fetchReports();
+        }
+    };
 
     const fetchInitialData = async () => {
         try {
@@ -35,7 +55,7 @@ export default function Principal() {
 
     const fetchActivities = async () => {
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://10.224.7.179:3000/api/activities', {
+        const response = await fetch('http://192.168.1.12:3000/api/activities', {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -45,7 +65,7 @@ export default function Principal() {
     const fetchTechnicians = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://10.224.7.179:3000/api/technicians', {
+            const response = await fetch('http://192.168.1.12:3000/api/technicians', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -67,23 +87,30 @@ export default function Principal() {
         }
     };
 
-    const [userName, setUserName] = useState('');
-
-    useEffect(() => {
-        fetchInitialData();
-        fetchUserName();
-    }, []);
-
     const fetchUserName = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://10.224.7.179:3000/api/user-profile', {
+            const response = await fetch('http://192.168.1.12:3000/api/user-profile', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
             setUserName(data.nombre_completo);
         } catch (error) {
             Alert.alert(error);
+        }
+    };
+
+    const getUserRole = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch('http://192.168.1.12:3000/api/user-profile', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            setUserRole(data.rol);
+        } catch (error) {
+            console.error('Error fetching user role:', error);
+            Alert.alert('Error', 'An error occurred while fetching user information.');
         }
     };
 
@@ -95,7 +122,7 @@ export default function Principal() {
     const fetchActivitiesForDate = async (dateString) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://10.224.7.179:3000/api/activities?date=${dateString}`, {
+            const response = await fetch(`http://192.168.1.12:3000/api/activities?date=${dateString}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) {
@@ -113,27 +140,126 @@ export default function Principal() {
         }
     };
 
-    const onDayPress = (day) => {
-        setSelectedDate(day.dateString);
-        navigation.navigate('ActionSelectionScreen', { date: day.dateString });
+    const fetchUserReports = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch('http://192.168.1.12:3000/api/reportes/usuario', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al obtener los reportes del usuario');
+            }
+            const data = await response.json();
+            setUserReports(data);
+        } catch (error) {
+            Alert.alert('Error', 'An error occurred while fetching user reports.');
+        }
     };
 
-    const navigation = useNavigation();
+    const fetchReports = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch('http://192.168.1.12:3000/api/reportes/admin', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al obtener los reportes');
+            }
+            const data = await response.json();
+            setAllReports(data);
+        } catch (error) {
+            Alert.alert('Error', 'An error occurred while fetching reports.');
+        }
+    };
+
+    const onDayPress = (day) => {
+        if (userRole === 'administrador') {
+            setSelectedDate(day.dateString);
+            navigation.navigate('ActionSelectionScreen', { date: day.dateString });
+        }
+    };
+
+    const handleAssignTask = (reportId) => {
+        setSelectedReportId(reportId);
+        setShowCalendarForAssignment(true);
+    };
+
+    const onDayPressForAssignment = (day) => {
+        navigation.navigate('AddActivity', { date: day.dateString, reportId: selectedReportId });
+        setShowCalendarForAssignment(false);
+    };
+
+    const onReporteModalClose = () => {
+        setReporteModalVisible(false);
+        if (userRole === 'usuario') {
+            fetchUserReports();
+        } else if (userRole === 'administrador') {
+            fetchReports();
+        }
+    };
 
     return (
         <ImageBackground source={imgfond} resizeMode="cover" style={styles.imageBackground}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.welcomeText}>Bienvenido, {typeof userName === 'string' ? userName : ''}</Text>
-                <TouchableOpacity style={styles.cerrarSesion} onPress={() => navigation.navigate('Login')}>
-                    <Text style={styles.buttonText}>Cerrar Sesión</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.container}>
-                <Calendar
-                    onDayPress={onDayPress}
-                    markedDates={markedDates}
-                />
-            </View>
+            <ScrollView>
+                <View style={styles.headerContainer}>
+                    <Text style={styles.welcomeText}>Bienvenido, {typeof userName === 'string' ? userName : ''}</Text>
+                    <TouchableOpacity style={styles.cerrarSesion} onPress={() => navigation.navigate('Login')}>
+                        <Text style={styles.buttonText}>Cerrar Sesión</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.calendarOrReportContainer}>
+                    {showCalendarForAssignment ? (
+                        <Calendar
+                            onDayPress={onDayPressForAssignment}
+                            markedDates={markedDates}
+                        />
+                    ) : userRole !== 'usuario' ? (
+                        <Calendar
+                            onDayPress={onDayPress}
+                            markedDates={markedDates}
+                        />
+                    ) : (
+                        <ScrollView style={styles.reportContainer}>
+                            <Text style={styles.userReports}>Tus reportes:</Text>
+                            {userReports.map((reporte) => (
+                                <View key={reporte.id} style={styles.reporteItem}>
+                                    <Text style={styles.reporteTitle}>{reporte.tipo_reporte}: {reporte.descripcion}</Text>
+                                    <Text>Estado: {reporte.estado}</Text>
+                                </View>
+                            ))}
+                        </ScrollView>
+                    )}
+                    {userRole === 'administrador' && (
+                        <ScrollView style={styles.reportContainer}>
+                            <Text style={styles.userReports}>Reportes de todos los usuarios:</Text>
+                            {allReports.map((reporte) => (
+                                <View key={reporte.id} style={styles.reporteItem}>
+                                    <Text style={styles.reporteTitle}>{reporte.tipo_reporte}: {reporte.descripcion}</Text>
+                                    <Text>Usuario: {reporte.nombre_usuario}</Text>
+                                    <Text>Área: {reporte.area}</Text>
+                                    <Text>Estado: {reporte.estado}</Text>
+                                    {reporte.estado === 'pendiente' && (
+                                        <TouchableOpacity onPress={() => handleAssignTask(reporte.id)} style={styles.assignButton}>
+                                            <Text style={styles.buttonText}>Asignar Técnico</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            ))}
+                        </ScrollView>
+                    )}
+                    {userRole === 'usuario' && (
+                        <TouchableOpacity style={styles.addReportButton} onPress={() => setReporteModalVisible(true)}>
+                            <Text style={styles.buttonText}>Crear Reporte</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+                <Modal visible={reporteModalVisible} animationType="slide">
+                    <AddReport onClose={onReporteModalClose} />
+                </Modal>
+            </ScrollView>
         </ImageBackground>
     );
 }
@@ -143,7 +269,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        marginTop: 20,
+        marginTop: 5,
     },
     calendar: {
         marginBottom: 16,
@@ -233,7 +359,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 12,
-        marginTop: 50,
+        marginTop: 10,
     },
     welcomeText: {
         fontSize: 18,
@@ -242,4 +368,44 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
     },
+    userReports: {
+        fontSize: 18,
+        marginTop: 45,
+        marginLeft: 5,
+        color: 'black',
+        fontWeight: 'bold',
+    },
+    addReportButton: {
+        backgroundColor: '#007AFF',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    reporteItem: {
+        backgroundColor: '#f0f0f0',
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 5,
+    },
+    reporteTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    assignButton: {
+        backgroundColor: '#4CAF50',
+        padding: 8,
+        borderRadius: 5,
+        marginTop: 5,
+        alignSelf: 'flex-start',
+    },
+    calendarOrReportContainer: {
+        flex: 1,
+        padding: 16,
+        marginTop: 5,
+    },
+    calendarOrReportContainer: {
+        padding: 16,
+        marginTop: 5,
+    }
 });

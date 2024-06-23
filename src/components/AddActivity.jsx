@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 
 export default function AddActivity({ route, navigation }) {
-    const { date } = route.params;
+    const { date, reportId } = route.params;
     const [technicians, setTechnicians] = useState([]);
     const [newActivity, setNewActivity] = useState({
         title: '',
@@ -13,12 +13,12 @@ export default function AddActivity({ route, navigation }) {
         technicianId: null,
         date: date,
     });
-
+    
     useEffect(() => {
         const fetchTechnicians = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const response = await fetch('http://10.224.179:3000/api/technicians', {
+                const response = await fetch('http://192.168.1.12:3000/api/technicians', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -38,7 +38,7 @@ export default function AddActivity({ route, navigation }) {
     const handleAddActivity = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://10.224.7.179:3000/api/activities', {
+            const response = await fetch('http://192.168.1.12:3000/api/activities', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

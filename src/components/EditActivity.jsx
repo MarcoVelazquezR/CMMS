@@ -12,7 +12,7 @@ export default function EditActivity({ route, navigation }) {
         const fetchActivity = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const response = await fetch(`http://10.224.7.179:3000/api/activities/${activityId}`, {
+                const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -29,7 +29,7 @@ export default function EditActivity({ route, navigation }) {
         const fetchTechnicians = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const response = await fetch('http://10.224.7.179:3000/api/technicians', {
+                const response = await fetch('http://192.168.1.12:3000/api/technicians', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -54,7 +54,7 @@ export default function EditActivity({ route, navigation }) {
                 ...activity,
                 hora: activity.hora.replace(/:00$/, ''), // Elimina ":00" si existe
             };
-            const response = await fetch(`http://10.224.7.179:3000/api/activities/${activityId}`, {
+            const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${token}`,

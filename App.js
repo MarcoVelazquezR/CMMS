@@ -10,7 +10,6 @@ import ViewActivities from './src/components/ViewActivities';
 import AddActivity from './src/components/AddActivity';
 import EditActivity from './src/components/EditActivity';
 import ActionSelectionScreen from './src/components/ActionSelectionScreen';
-import imgfond from './src/img/fondo.jpg';
 
 const Stack = createNativeStackNavigator();
 

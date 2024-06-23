@@ -3,8 +3,10 @@ import { ImageBackground, View, Text, TextInput, TouchableOpacity, StyleSheet, S
 import { Picker } from '@react-native-picker/picker';
 import imgfond from '../img/fondo.jpg';
 import { BlurView } from 'expo-blur';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Register() {
+  const navigation = useNavigation();
   const [selectedRole, setSelectedRole] = useState('administrador');
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [email, setEmail] = useState('');
@@ -23,7 +25,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch('http://10.224.7.179:3000/api/register', {
+      const response = await fetch('http://192.168.1.12:3000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,6 +44,7 @@ export default function Register() {
       }
       const data = await response.json();
       Alert.alert('Éxito', data.message);
+      navigation.replace('Login');
     } catch (error) {
       console.error('Error al registrar usuario:', error.message);
       Alert.alert('Error', error.message);
@@ -77,6 +80,7 @@ export default function Register() {
               >
                 <Picker.Item label="Administrador" value="administrador" />
                 <Picker.Item label="Técnico" value="tecnico" />
+                <Picker.Item label="Usuario" value="usuario" />
               </Picker>
             </View>
             <View>
