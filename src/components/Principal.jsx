@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, Alert, ImageBackground, ScrollView } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import imgfond from '../img/fondo.jpg';
 import AddReport from './AddReport';
 import AddActivity from './AddActivity';
@@ -29,12 +29,14 @@ export default function Principal() {
     const [showCalendarForAssignment, setShowCalendarForAssignment] = useState(false);
     const [allReports, setAllReports] = useState([]);
 
-    useEffect(() => {
-        fetchInitialData();
-        fetchUserName();
-        getUserRole();
-        fetchReportsBasedOnRole();
-    }, [userRole]);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchInitialData();
+            fetchUserName();
+            getUserRole();
+            fetchReportsBasedOnRole();
+        }, [userRole]) // Dependencia para recargar solo cuando cambia el rol
+    );
 
     const fetchReportsBasedOnRole = async () => {
         if (userRole === 'usuario') {
@@ -184,19 +186,43 @@ export default function Principal() {
     const handleAssignTask = (reportId) => {
         setSelectedReportId(reportId);
         setShowCalendarForAssignment(true);
+        Alert.alert('Asignar Técnico', 'Selecciona una fecha para programar la actividad.');
     };
 
     const onDayPressForAssignment = (day) => {
-        navigation.navigate('AddActivity', { date: day.dateString, reportId: selectedReportId });
+        navigation.navigate('AddActivity', { date: day.dateString, reportID: selectedReportId });
         setShowCalendarForAssignment(false);
     };
 
     const onReporteModalClose = () => {
         setReporteModalVisible(false);
-        if (userRole === 'usuario') {
-            fetchUserReports();
-        } else if (userRole === 'administrador') {
-            fetchReports();
+        setTimeout(() => {
+            fetchReportsBasedOnRole();
+        }, 0);
+    };
+
+    const handleCompleteTask = async (reportId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch(`http://192.168.1.12:3000/api/reportes/${reportId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ estado: 'resuelto' }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error response from server:', errorData); // Registrar la respuesta completa
+                throw new Error(errorData.error || 'Error al completar el reporte');
+            }
+
+            Alert.alert('Éxito', 'Reporte completado');
+            fetchReportsBasedOnRole(); // Recargar los reportes después de actualizar
+        } catch (error) {
+            Alert.alert('Error', error.message);
         }
     };
 
@@ -244,6 +270,11 @@ export default function Principal() {
                                     {reporte.estado === 'pendiente' && (
                                         <TouchableOpacity onPress={() => handleAssignTask(reporte.id)} style={styles.assignButton}>
                                             <Text style={styles.buttonText}>Asignar Técnico</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {reporte.estado === 'en_progreso' && (
+                                        <TouchableOpacity onPress={() => handleCompleteTask(reporte.id)} style={styles.completeButton}>
+                                            <Text style={styles.buttonText}>Completado</Text>
                                         </TouchableOpacity>
                                     )}
                                 </View>
@@ -407,5 +438,18 @@ const styles = StyleSheet.create({
     calendarOrReportContainer: {
         padding: 16,
         marginTop: 5,
-    }
+    },
+    reporteEstadoResuelto: {
+        backgroundColor: 'green',
+        color: 'white',
+        padding: 5,
+        borderRadius: 5,
+    },
+    completeButton: {
+        backgroundColor: 'green',
+        padding: 8,
+        borderRadius: 5,
+        marginTop: 5,
+        alignSelf: 'flex-start',
+    },
 });

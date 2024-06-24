@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 
 export default function AddActivity({ route, navigation }) {
-    const { date, reportId } = route.params;
+    const { date, reportID } = route.params;
     const [technicians, setTechnicians] = useState([]);
     const [newActivity, setNewActivity] = useState({
         title: '',
@@ -13,7 +13,8 @@ export default function AddActivity({ route, navigation }) {
         technicianId: null,
         date: date,
     });
-    
+
+
     useEffect(() => {
         const fetchTechnicians = async () => {
             try {
@@ -31,9 +32,27 @@ export default function AddActivity({ route, navigation }) {
                 Alert.alert('Error', 'No se pudieron cargar los técnicos');
             }
         };
-
+        const fetchReportDescription = async () => {
+            if (reportID) {
+                try {
+                    const token = await AsyncStorage.getItem('token');
+                    const response = await fetch(`http://192.168.1.12:3000/api/reportes/${reportID}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (response.ok) {
+                        const reportData = await response.json();
+                        setNewActivity(prev => ({ ...prev, description: reportData.descripcion }));
+                    } else {
+                        console.error('Error fetching report description:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error fetching report description:', error);
+                }
+            }
+        };
         fetchTechnicians();
-    }, []);
+        fetchReportDescription();
+    }, [reportID]);
 
     const handleAddActivity = async () => {
         try {
@@ -44,11 +63,11 @@ export default function AddActivity({ route, navigation }) {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify(newActivity),
+                body: JSON.stringify({...newActivity, reportId: reportID}),
             });
 
             if (!response.ok) {
-                const errorData = await response.json(); 
+                const errorData = await response.json();
                 throw new Error(errorData.error || 'Error al agregar actividad');
             }
 
@@ -90,9 +109,9 @@ export default function AddActivity({ route, navigation }) {
                 />
                 <Picker
                     style={styles.picker}
-                    selectedValue={newActivity.technicianId} 
+                    selectedValue={newActivity.technicianId}
                     onValueChange={(itemValue) => setNewActivity({ ...newActivity, technicianId: itemValue })}
-                    mode="dropdown" 
+                    mode="dropdown"
                 >
                     <Picker.Item key={0} label="Seleccionar Técnico" value={null} />
                     {Array.isArray(technicians) && technicians.map((technician) => (
