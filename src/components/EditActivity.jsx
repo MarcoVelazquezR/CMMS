@@ -12,7 +12,7 @@ export default function EditActivity({ route, navigation }) {
         const fetchActivity = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
+                const response = await fetch(`http://192.168.207.3:3000/api/activities/${activityId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -29,7 +29,7 @@ export default function EditActivity({ route, navigation }) {
         const fetchTechnicians = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const response = await fetch('http://192.168.1.12:3000/api/technicians', {
+                const response = await fetch('http://192.168.207.3:3000/api/technicians', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!response.ok) {
@@ -52,9 +52,9 @@ export default function EditActivity({ route, navigation }) {
             const token = await AsyncStorage.getItem('token');
             const formattedActivity = {
                 ...activity,
-                hora: activity.hora.replace(/:00$/, ''), // Elimina ":00" si existe
+                hora: activity.hora.replace(/:00$/, ''),
             };
-            const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
+            const response = await fetch(`http://192.168.207.3:3000/api/activities/${activityId}`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -78,7 +78,6 @@ export default function EditActivity({ route, navigation }) {
         <View style={styles.container}>
             {activity && (
                 <>
-                    {/* Campos de entrada para título, descripción, etc. */}
                     <TextInput
                         style={styles.input}
                         placeholder="Título"

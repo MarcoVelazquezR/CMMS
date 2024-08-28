@@ -11,7 +11,7 @@ export default function AddReport({ onClose }) {
     const handleAddReport = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/reportes', {
+            const response = await fetch('http://192.168.207.3:3000/api/reportes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

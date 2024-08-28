@@ -10,7 +10,7 @@ export default function ViewActivities({ route, navigation }) {
     const fetchActivitiesForDate = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities?date=${date}`, {
+            const response = await fetch(`http://192.168.207.3:3000/api/activities?date=${date}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -38,7 +38,7 @@ export default function ViewActivities({ route, navigation }) {
     const handleDeleteActivity = async (activityId) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities/${activityId}`, {
+            const response = await fetch(`http://192.168.207.3:3000/api/activities/${activityId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });

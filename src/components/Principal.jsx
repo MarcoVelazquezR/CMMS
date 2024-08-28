@@ -57,7 +57,7 @@ export default function Principal() {
 
     const fetchActivities = async () => {
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch('http://192.168.1.12:3000/api/activities', {
+        const response = await fetch('http://192.168.207.3:3000/api/activities', {
             headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -67,7 +67,7 @@ export default function Principal() {
     const fetchTechnicians = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/technicians', {
+            const response = await fetch('http://192.168.207.3:3000/api/technicians', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -92,7 +92,7 @@ export default function Principal() {
     const fetchUserName = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/user-profile', {
+            const response = await fetch('http://192.168.207.3:3000/api/user-profile', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
@@ -105,7 +105,7 @@ export default function Principal() {
     const getUserRole = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/user-profile', {
+            const response = await fetch('http://192.168.207.3:3000/api/user-profile', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
@@ -124,7 +124,7 @@ export default function Principal() {
     const fetchActivitiesForDate = async (dateString) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/activities?date=${dateString}`, {
+            const response = await fetch(`http://192.168.207.3:3000/api/activities?date=${dateString}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) {
@@ -145,7 +145,7 @@ export default function Principal() {
     const fetchUserReports = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/reportes/usuario', {
+            const response = await fetch('http://192.168.207.3:3000/api/reportes/usuario', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -162,7 +162,7 @@ export default function Principal() {
     const fetchReports = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.12:3000/api/reportes/admin', {
+            const response = await fetch('http://192.168.207.3:3000/api/reportes/admin', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -204,7 +204,7 @@ export default function Principal() {
     const handleCompleteTask = async (reportId) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.12:3000/api/reportes/${reportId}`, {
+            const response = await fetch(`http://192.168.207.3:3000/api/reportes/${reportId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
